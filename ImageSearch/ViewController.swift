@@ -18,25 +18,24 @@ class ViewController: UIViewController {
     override func viewDidLoad() {
             super.viewDidLoad()
             TextField.delegate = self
-            searchImage(text: "panda")
+            searchImage(text: "cstrike")
         }
 
 
         func convert(farm: Int, server: String, photoId: String, secret: String)-> URL? {
             
-            let url =     URL(string:"https://farm\(farm).staticflickr.com/\(server)/\(photoId)_\(secret)_c.jpg")
-            print(url)
+            let    url =     URL(string:"https://farm\(farm).staticflickr.com/\(server)/\(photoId)_\(secret)_c.jpg")
             return url
         }
         
         
         func searchImage(text: String) {
             
-                 let base = "https://api.flickr.com/services/rest/?method=flickr.photos.search"
-                 let key = "&api_key=da8153d16f20f5083e774f69183000e6"
-                 let format = "&format=json&nojsoncallback=1"
+                 let base         = "https://api.flickr.com/services/rest/?method=flickr.photos.search"
+                 let key          = "&api_key=da8153d16f20f5083e774f69183000e6"
+                 let format       = "&format=json&nojsoncallback=1"
                  let textToSearch = "&text=\(text)"
-                 let sort = "&sort=relevance"
+                 let sort         = "&sort=relevance"
 
                  let searchUrl = base + key + format + textToSearch + sort
                  
@@ -44,27 +43,27 @@ class ViewController: UIViewController {
                  
                  URLSession.shared.dataTask(with: url) { (data, _, _) in
                      guard let jsonData = data else {
-                         print("нет данных")
+                         print("No data")
                          return
                      }
                      
                      guard let jsonAny = try? JSONSerialization.jsonObject(with: jsonData, options: []) else {
-                         print("нет json")
+                         print("Data's format no json")
                          return
                      }
             
                     guard let json = jsonAny as? [String : Any] else {
-                        print("1")
+                        print("Wrong json format")
                         return
                     }
             
                     guard let photos = json["photos"] as? [String: Any] else {
-                        print("no photos")
+                        print("No photos title")
                         return
                     }
                     
                     guard let photosArray = photos["photo"] as? [Any] else {
-                             print("3")
+                        print("Photos absent")
                         return
                     }
                     
@@ -79,25 +78,19 @@ class ViewController: UIViewController {
                     }
                     
                    
-                    let farm = firstPhoto["farm"] as! Int
-                    let id = firstPhoto["id"] as! String
+                    let farm   = firstPhoto["farm"] as! Int
+                    let id     = firstPhoto["id"] as! String
                     let secret = firstPhoto["secret"] as! String
                     let server = firstPhoto["server"] as! String
                                                 
                     let pictureURL = self.convert(farm: farm, server: server, photoId: id, secret: secret)
             
-                    print(pictureURL)
-                    
-                  //  sleep(10)
-
+      
                    URLSession.shared.dataTask(with: pictureURL!, completionHandler:  { (data,_,_ ) in
                         DispatchQueue.main.async {
                             self.imageView.image = UIImage(data: data!)
                         }
                     }).resume()
-            
-                 
-                    
                     
                  }.resume()
         }
