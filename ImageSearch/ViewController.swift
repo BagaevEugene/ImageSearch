@@ -10,10 +10,14 @@ import UIKit
 
 class ViewController: UIViewController {
 
-       @IBOutlet weak var imageView: UIImageView!
+    @IBOutlet weak var imageView: UIImageView!
         
-        override func viewDidLoad() {
+    @IBOutlet weak var TextField: UITextField!
+    
+    
+    override func viewDidLoad() {
             super.viewDidLoad()
+            TextField.delegate = self
             searchImage(text: "panda")
         }
 
@@ -29,7 +33,7 @@ class ViewController: UIViewController {
         func searchImage(text: String) {
             
                  let base = "https://api.flickr.com/services/rest/?method=flickr.photos.search"
-                 let key = "&api_key=938072888c9d1845a5096b088be070d7"
+                 let key = "&api_key=da8153d16f20f5083e774f69183000e6"
                  let format = "&format=json&nojsoncallback=1"
                  let textToSearch = "&text=\(text)"
                  let sort = "&sort=relevance"
@@ -50,14 +54,17 @@ class ViewController: UIViewController {
                      }
             
                     guard let json = jsonAny as? [String : Any] else {
+                        print("1")
                         return
                     }
             
                     guard let photos = json["photos"] as? [String: Any] else {
+                        print("no photos")
                         return
                     }
                     
                     guard let photosArray = photos["photo"] as? [Any] else {
+                             print("3")
                         return
                     }
                     
@@ -83,13 +90,13 @@ class ViewController: UIViewController {
                     
                   //  sleep(10)
 
-                 /*   URLSession.shared.dataTask(with: pictureURL!, completionHandler:  { (data,_,_ ) in
+                   URLSession.shared.dataTask(with: pictureURL!, completionHandler:  { (data,_,_ ) in
                         DispatchQueue.main.async {
                             self.imageView.image = UIImage(data: data!)
                         }
                     }).resume()
             
-                 */
+                 
                     
                     
                  }.resume()
@@ -97,7 +104,14 @@ class ViewController: UIViewController {
 }
 
 
-    
+extension ViewController: UITextFieldDelegate{
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        
+        searchImage(text: TextField.text!)
+        
+        return true
+    }
+}
     
     
 
